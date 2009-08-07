@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager( typeof( MainForm ) );
 			this.PasswordLengthLabel = new System.Windows.Forms.Label();
 			this.PasswordLengthUpDown = new System.Windows.Forms.NumericUpDown();
 			this.IncludeLettersLabel = new System.Windows.Forms.Label();
@@ -210,6 +211,7 @@
 			this.Controls.Add( this.PasswordLengthLabel );
 			this.DoubleBuffered = true;
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+			this.Icon = ( (System.Drawing.Icon)( resources.GetObject( "$this.Icon" ) ) );
 			this.MaximizeBox = false;
 			this.Name = "MainForm";
 			this.Text = "Jelszo generator";
