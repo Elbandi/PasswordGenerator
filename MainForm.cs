@@ -27,7 +27,7 @@ namespace PasswordGenerator
 			{
 				try
 				{
-					PwGen jelszo = new PwGen( (int)PasswordLengthUpDown.Value );
+					PwGen jelszo = new PwGen( (int)PasswordLengthUpDown.Value, (int)PasswordLengthUpDown.Value );
 					jelszo.AllowLowerChar = IncludeLettersCheckbox.Checked;
 					jelszo.AllowUpperChar = IncludeMixedcaseCheckbox.Checked;
 					jelszo.AllowNumbers = IncludeNumbersCheckbox.Checked;
@@ -49,7 +49,7 @@ namespace PasswordGenerator
 
 		private void PasswordListbox_DoubleClick( object sender, EventArgs e )
 		{
-			Clipboard.SetText( PasswordListbox.SelectedItem as string);
+			Clipboard.SetText( PasswordListbox.SelectedItem as string );
 		}
 	}
 }

@@ -198,7 +198,7 @@ namespace PasswordGenerator
 			// returns an int >= lBound and < uBound
 			uint urndnum;
 			byte[] rndnum = new Byte[4];
-			if ( lBound == uBound - 1 )
+			if ( lBound >= uBound - 1 )
 			{
 				// test for degenerate case where only lBound can be returned   
 				return lBound;
