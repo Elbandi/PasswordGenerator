@@ -22,6 +22,7 @@ namespace PasswordGenerator
 		private bool hasUpperChar = true;
 		private bool hasNumbers = true;
 		private bool hasSymbols = false;
+		private bool requireAlltype = true;
 		private string exclusionSet;
 		private string lowerCharString = "abcdefghijklmnopqrstuvwxyz";
 		private string upperCharString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -98,6 +99,12 @@ namespace PasswordGenerator
 			set { this.hasConsecutive = value; }
 		}
 
+		public bool RequireAllType
+		{
+			get { return this.requireAlltype; }
+			set { this.requireAlltype = value; }
+		}
+
 		#endregion
 
 		#region Constructor
@@ -147,6 +154,9 @@ namespace PasswordGenerator
 			// Pick random length between minimum and maximum   
 			int pwdLength = GetCryptographicRandomNumber( this.Minimum, this.Maximum );
 
+			if ( !this.hasRepeating && ( GetAllowedChars().Length < pwdLength ) )
+				throw new Exception( "Nemtudok a feltetelnek megfelelo jelszot generalni" );
+
 			StringBuilder pwdBuffer = new StringBuilder();
 			pwdBuffer.Capacity = this.Maximum;
 
@@ -156,40 +166,50 @@ namespace PasswordGenerator
 			// Initial dummy character flag
 			lastCharacter = nextCharacter = '\n';
 
-			while ( pwdBuffer.Length < pwdLength )
+			do
 			{
-				nextCharacter = GetRandomCharacter();
-
-				if ( !this.ConsecutiveCharacters )
+				pwdBuffer.Length = 0;
+				while ( pwdBuffer.Length < pwdLength )
 				{
-					if ( lastCharacter == nextCharacter )
-						continue;
+					nextCharacter = GetRandomCharacter();
+
+					if ( !this.ConsecutiveCharacters )
+					{
+						if ( lastCharacter == nextCharacter )
+							continue;
+					}
+
+					if ( !this.RepeatCharacters )
+					{
+						if ( pwdBuffer.ToString().IndexOf( nextCharacter ) >= 0 )
+							continue;
+					}
+
+					if ( null != this.Exclusions )
+					{
+						if ( this.Exclusions.IndexOf( nextCharacter ) >= 0 )
+							continue;
+					}
+
+					pwdBuffer.Append( nextCharacter );
+					lastCharacter = nextCharacter;
 				}
+			} while ( this.requireAlltype && !IsGoodPassword( pwdBuffer.ToString() ) );
 
-				if ( !this.RepeatCharacters )
-				{
-					if ( pwdBuffer.ToString().IndexOf( nextCharacter ) >= 0 )
-						continue;
-				}
+			return pwdBuffer.ToString();
+		}
 
-				if ( null != this.Exclusions )
-				{
-					if ( this.Exclusions.IndexOf( nextCharacter ) >= 0 )
-						continue;
-				}
-
-				pwdBuffer.Append( nextCharacter );
-				lastCharacter = nextCharacter;
-			}
-
-			if ( null != pwdBuffer )
-			{
-				return pwdBuffer.ToString();
-			}
-			else
-			{
-				return String.Empty;
-			}
+		protected bool IsGoodPassword( string password )
+		{
+			if ( hasLowerChar && ( password.IndexOfAny( lowerCharString.ToCharArray() ) < 0 ) )
+				return false;
+			if ( hasUpperChar && ( password.IndexOfAny( upperCharString.ToCharArray() ) < 0 ) )
+				return false;
+			if ( hasNumbers && ( password.IndexOfAny( numberCharString.ToCharArray() ) < 0 ) )
+				return false;
+			if ( hasSymbols && ( password.IndexOfAny( symbolCharString.ToCharArray() ) < 0 ) )
+				return false;
+			return true;
 		}
 
 		protected int GetCryptographicRandomNumber( int lBound, int uBound )
@@ -215,10 +235,10 @@ namespace PasswordGenerator
 			return (int)( urndnum % ( uBound - lBound ) ) + lBound;
 		}
 
-		protected char GetRandomCharacter()
+		protected string GetAllowedChars()
 		{
 			if ( !( hasLowerChar || hasUpperChar || hasNumbers || hasSymbols ) )
-				throw new ArgumentException( "faszomtudja" );
+				throw new ArgumentException( "Egy karakterhalmazt engedelyezni kell" );
 
 			string pwdChar = "";
 			if ( hasLowerChar )
@@ -229,8 +249,12 @@ namespace PasswordGenerator
 				pwdChar += numberCharString;
 			if ( hasSymbols )
 				pwdChar += symbolCharString;
+			return pwdChar;
+		}
 
-			char[] pwdCharArray = pwdChar.ToCharArray();
+		protected char GetRandomCharacter()
+		{
+			char[] pwdCharArray = GetAllowedChars().ToCharArray();
 			int randomCharPosition = GetCryptographicRandomNumber( pwdCharArray.GetLowerBound( 0 ), pwdCharArray.GetUpperBound( 0 ) );
 			char randomChar = pwdCharArray[randomCharPosition];
 			return randomChar;
