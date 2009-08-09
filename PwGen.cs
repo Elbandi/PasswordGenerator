@@ -157,10 +157,11 @@ namespace PasswordGenerator
 			if ( !this.hasRepeating && ( GetAllowedChars().Length < pwdLength ) )
 				throw new Exception( "Nemtudok a feltetelnek megfelelo jelszot generalni" );
 
-			if ( ( this.hasLowerChar && this.requireAlltype && IsSubString( this.lowerCharString, this.exclusionSet ) )
+			if ( ( this.exclusionSet != null ) &&
+				( ( this.hasLowerChar && this.requireAlltype && IsSubString( this.lowerCharString, this.exclusionSet ) )
 				|| ( this.hasUpperChar && this.requireAlltype && IsSubString( this.upperCharString, this.exclusionSet ) )
 				|| ( this.hasNumbers && this.requireAlltype && IsSubString( this.numberCharString, this.exclusionSet ) )
-				|| ( this.hasSymbols && this.requireAlltype && IsSubString( this.symbolCharString, this.exclusionSet ) ) )
+				|| ( this.hasSymbols && this.requireAlltype && IsSubString( this.symbolCharString, this.exclusionSet ) ) ) )
 				throw new Exception( "Az egyik karakterhalmaz teljesen ki van zarva" );
 
 			StringBuilder pwdBuffer = new StringBuilder();
